@@ -23,3 +23,41 @@ test("Vertical win", t => {
 
     t.end();
 });
+
+test("Horizontal win", t => {
+    const saga = testSaga(game);
+
+    const board = [
+        [Token.Red, Token.Empty, Token.Empty, Token.Empty],
+        [Token.Red, Token.Empty, Token.Empty, Token.Empty],
+        [Token.Red, Token.Empty, Token.Empty, Token.Empty],
+        [Token.Red, Token.Empty, Token.Empty, Token.Empty],
+        [Token.Empty, Token.Empty, Token.Empty, Token.Empty],
+        [Token.Empty, Token.Empty, Token.Empty, Token.Empty],
+    ];
+
+    saga.next().take(PLACE_TOKEN)
+        .next(placeToken(0))
+        .next(board).put(gameOver(Token.Red));
+
+    t.end();
+});
+
+test("Diagonal win", t => {
+    const saga = testSaga(game);
+
+    const board = [
+        [Token.Red, Token.Empty, Token.Empty, Token.Empty],
+        [Token.Yellow, Token.Red, Token.Empty, Token.Empty],
+        [Token.Red, Token.Red, Token.Red, Token.Empty],
+        [Token.Yellow, Token.Yellow, Token.Yellow, Token.Red],
+        [Token.Empty, Token.Empty, Token.Empty, Token.Empty],
+        [Token.Empty, Token.Empty, Token.Empty, Token.Empty],
+    ];
+
+    saga.next().take(PLACE_TOKEN)
+        .next(placeToken(0))
+        .next(board).put(gameOver(Token.Red));
+
+    t.end();
+});
