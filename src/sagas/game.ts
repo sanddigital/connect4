@@ -4,17 +4,59 @@ import {put, select, take} from "redux-saga/effects";
 import {PLACE_TOKEN, gameOver} from "actions/game";
 import {Store, Token} from "store/store";
 
-function getWinner(gameBoard: Token[][]): Token {
-    const verticalWinner = _.chain(gameBoard)
-        .filter(g => _.uniq(g).length === 1 && g[0] !== Token.Empty)
-        .map(g => g[0])
-        .value();
+function getWinner(gameBoard: Token[][]): Token {    
 
-    if (verticalWinner.length) {
-        return verticalWinner[0];
+    const rotateBoard = _.zip.apply(_, gameBoard);
+        
+    // Match 4 in row
+    for(let x = 0; x < rotateBoard.length; x++) {
+        for(let y = 0; y < rotateBoard[x].length; y++) {
+
+            let match = 
+            isWinner(rotateBoard, x, y, 1, 0) || // Horizonatal
+            isWinner(rotateBoard, x, y, 0, 1) || // Vertical
+            isWinner(rotateBoard, x, y, 1, 1) || // Diagonal top-left > bottom-right
+            isWinner(rotateBoard, x, y, 1, -1);  // Diagonal bottom-left > top-right
+
+            if(match)
+                return rotateBoard[x][y];
+        }    
+    }
+    
+    return null;
+}
+
+function isWinner(gameBoard, x, y, stepX, stepY) {
+    let startValue = gameBoard[x][y];
+
+    if(startValue === Token.Empty)
+        return false;
+    
+    for (let i = 1; i < 4; i++) {
+        let xPos = gameBoard[x + i * stepX]
+        if(!xPos)
+            return false;
+
+        if (xPos[y + i * stepY] != startValue)
+            return false;
     }
 
-    return null;
+    return true;
+}
+
+function isDraw(gameBoard: Token[][]): boolean {    
+    let movesRemaining = 0;
+    
+    for(let x = 0; x < gameBoard.length; x++) {
+        for(let y = 0; y < gameBoard[x].length; y++) {
+
+            let cellValue = gameBoard[x][y];
+            if(cellValue === 0)
+                movesRemaining++;
+        }    
+    }
+
+    return movesRemaining === 0;
 }
 
 export default function* game(): any {
@@ -24,6 +66,11 @@ export default function* game(): any {
         if (winner) {
             yield put(gameOver(winner));
             break;
+        }
+        
+        if (isDraw(gameBoard)) {
+             yield put(gameOver(Token.Empty));
+             break;
         }
     }
 }
