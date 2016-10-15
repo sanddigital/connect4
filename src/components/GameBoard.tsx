@@ -1,14 +1,16 @@
 import * as _ from "lodash";
 import * as React from "react";
-import {Dispatch, connect} from "react-redux";
+import { Dispatch, connect } from "react-redux";
 
-import {placeToken} from "actions/game";
+
+import { placeToken } from "actions/game";
 import colors from "colors";
-import {Store, Token} from "store/store";
+import { Store, Token } from "store/store";
 
 interface GameBoardProps {
     gameBoard?: Token[][];
     turn?: Token;
+    turnNumber?: number;
     dispatch?: Dispatch<Store>;
 }
 
@@ -20,12 +22,12 @@ const GameBoard = (props: GameBoardProps) => {
     const arrow = <span className="ion ion-chevron-down"
         style={Object.assign({}, arrowStyle, { color: colors[props.turn] })}></span>;
     const arrowRow = <div style={Object.assign({}, rowStyle, { height: 60 })}>
-            {flippedGameBoard[0].map((token, col) =>
-                <div style={tokenWrapperStyle}
-                    onClick={() => canPlaceToken(col) && props.dispatch(placeToken(col))}>
-                    {canPlaceToken(col) ? arrow : null}
-                </div>)}
-        </div>;
+        {flippedGameBoard[0].map((token, col) =>
+            <div style={tokenWrapperStyle}
+                onClick={() => canPlaceToken(col) && props.dispatch(placeToken(col))}>
+                {canPlaceToken(col) ? arrow : null}
+            </div>)}
+    </div>;
 
     const rows = flippedGameBoard.map(row =>
         <div style={rowStyle}>
@@ -58,4 +60,14 @@ const arrowStyle = {
     fontSize: 45,
 };
 
-export default connect(store => ({ gameBoard: store.gameBoard, turn: store.turn }))(GameBoard);
+function mapStateToProps(state) {
+    const { tokenReducer } = state;
+
+    return {
+        gameBoard: tokenReducer.gameBoard,
+        turn: tokenReducer.turn,
+        turnNumber: tokenReducer.turnNumber
+    };
+}
+
+export default connect(mapStateToProps)(GameBoard);

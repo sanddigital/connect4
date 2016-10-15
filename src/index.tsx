@@ -11,5 +11,6 @@ if ((module as any).hot) {
     (module as any).hot.accept("./App", () => {
         const NextApp = require("./App").default;
         ReactDOM.render(<AppContainer><NextApp /></AppContainer>, rootElement);
+        
     });
 }

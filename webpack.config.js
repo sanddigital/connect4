@@ -4,6 +4,9 @@ var webpack = require('webpack');
 module.exports = {
     debug: true,
     devtool: "#eval-source-map",
+    devServer: {
+        historyApiFallback: true,
+    },
     entry: [
         'react-hot-loader/patch',
         'webpack-dev-server/client?http://localhost:8088',

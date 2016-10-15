@@ -4,6 +4,9 @@ import {put, select, take} from "redux-saga/effects";
 import {PLACE_TOKEN, gameOver} from "actions/game";
 import {Store, Token} from "store/store";
 
+import { browserHistory } from 'react-router'
+import { push } from "react-router-redux";
+
 function getWinner(gameBoard: Token[][]): Token {    
 
     const rotateBoard = _.zip.apply(_, gameBoard);
@@ -59,9 +62,19 @@ function isDraw(gameBoard: Token[][]): boolean {
     return movesRemaining === 0;
 }
 
+export const getTokenReducer = (state) => state.tokenReducer;
+
+import getStore from "../App";
+
 export default function* game(): any {
     while (yield take(PLACE_TOKEN)) {
-        const gameBoard = yield select<Store>(s => s.gameBoard);
+        const tokenReducer = yield select<Store>(getTokenReducer);
+        const gameBoard = tokenReducer.gameBoard;
+        const turnNumber = tokenReducer.turnNumber;
+
+        const theStore =  getStore();                  
+        theStore.props.store.dispatch(push(22));        
+
         const winner = getWinner(gameBoard);
         if (winner) {
             yield put(gameOver(winner));

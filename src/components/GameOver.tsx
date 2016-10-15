@@ -1,9 +1,9 @@
 import * as React from "react";
-import {Dispatch, connect} from "react-redux";
+import { Dispatch, connect } from "react-redux";
 
-import {newGame} from "actions/game";
+import { newGame } from "actions/game";
 import colors from "colors";
-import {Store, Token} from "store/store";
+import { Store, Token } from "store/store";
 
 interface GameOverProps {
     winner: Token;
@@ -18,7 +18,7 @@ const coloredMessage = (token: Token) =>
     <span><span style={{ color: colors[token] }}>{players[token]}</span> wins!</span>;
 
 const GameOver = (props: GameOverProps) => {
-    if (props.winner === null) {
+    if (props.winner === null || props.winner === undefined) {
         return null;
     }
 
@@ -69,4 +69,12 @@ const overlayStyle = {
     top: 0,
 };
 
-export default connect(store => ({ winner: store.winner }))(GameOver);
+function mapStateToProps(state) {
+    const { tokenReducer } = state;
+
+    return {
+        winner: tokenReducer.winner
+    };
+}
+
+export default connect(mapStateToProps)(GameOver);
