@@ -11,8 +11,8 @@ import Root from "views/Root";
 
 import {loadState, saveState} from  'localStorage';
 
-export const persistedState = loadState();
-export const store = configureStore(persistedState);
+const persistedState = loadState();
+const store = configureStore(persistedState);
 
 // subscribe to chnages made to state and persist in local storage at max of once per second 
 store.subscribe(throttle(()=>{
@@ -24,11 +24,7 @@ const history = syncHistoryWithStore(browserHistory, store);
 
 /* tslint:disable */
 require("ionicons-npm/css/ionicons.css");
-/* tslint:enable */
-
-export function getStore(){
-    return store;
-} 
+/* tslint:enable */ 
 
 export default function App() {
     return <Root store={store} history={history} />;

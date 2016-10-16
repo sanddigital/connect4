@@ -6,10 +6,16 @@ import { routerMiddleware, push } from 'react-router-redux';
 
 import reducers from 'reducers';
 
+export let theStore = null;
+
 export function configureStore(persistedState) {
     const middleware = routerMiddleware(browserHistory);
     const sagaMiddleware = createSagaMiddleware();
-    const store = createStore(reducers, persistedState, applyMiddleware(sagaMiddleware, middleware));
+    theStore = createStore(reducers, persistedState, applyMiddleware(sagaMiddleware, middleware));
     sagaMiddleware.run(sagas);
-    return store;
+    return theStore;
+}
+
+export const getStore : any = () =>{
+    return theStore;
 }

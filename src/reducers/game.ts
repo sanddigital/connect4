@@ -15,6 +15,7 @@ const initialState = <Store>{
     turn: Token.Yellow,
     turnNumber: 1,
     winner: null,
+    history: null
 };
 
 export default function tokenReducer(state: Store = initialState, action: GameAction = null): Store {
@@ -31,7 +32,25 @@ export default function tokenReducer(state: Store = initialState, action: GameAc
             gameBoard[action.column] = column;
             const turn = state.turn === Token.Yellow ? Token.Red : Token.Yellow;
             const turnNumber = state.turnNumber + 1;
-            return Object.assign({}, state, { gameBoard, turn, turnNumber });
+            let history = _.clone(state.history);
+
+            // Record move history
+            const newHistory = { id: turnNumber, gameBoard: gameBoard };    
+                     
+            if (history) {
+                const replaceIndex = history.findIndex(a => a.id === newHistory.id);
+                if(replaceIndex > -1)
+                    history.splice(replaceIndex, history.length - replaceIndex, newHistory);
+                else
+                    history.push(newHistory);
+            }
+            else {
+                history = [];
+                history.push(newHistory);
+            }
+
+            // Assign back state
+            return Object.assign({}, state, { gameBoard, turn, turnNumber, history });
         default:
             return state;
     }
