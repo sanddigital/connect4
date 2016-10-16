@@ -4,11 +4,20 @@ import { Provider } from "react-redux";
 import { configureStore } from "./store";
 import { Router, Route, browserHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux'
+import { throttle } from 'lodash'
 
 import Index from "views";
 import Root from "views/Root";
 
-export const store = configureStore();
+import {loadState, saveState} from  'localStorage';
+
+export const persistedState = loadState();
+export const store = configureStore(persistedState);
+
+// subscribe to chnages made to state and persist in local storage at max of once per second 
+store.subscribe(throttle(()=>{
+    saveState(store.getState());
+}, 1000));
 
 // Create an enhanced history that syncs navigation events with the store
 const history = syncHistoryWithStore(browserHistory, store);
