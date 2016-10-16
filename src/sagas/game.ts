@@ -1,12 +1,12 @@
 import * as _ from "lodash";
 import { put, select, take } from "redux-saga/effects";
 
-import { PLACE_TOKEN, gameOver } from "actions/game";
+import { PLACE_TOKEN, NEW_GAME, gameOver } from "actions/game";
 import { Store, Token } from "store/store";
 import { getStore } from "store";
 
 import { browserHistory } from 'react-router'
-import { push } from "react-router-redux";
+import { push, LOCATION_CHANGE, go, replace } from "react-router-redux";
 
 function getWinner(gameBoard: Token[][]): Token {
 
@@ -65,23 +65,26 @@ function isDraw(gameBoard: Token[][]): boolean {
 
 export const getTokenReducer = (state) => state.tokenReducer;
 
-export default function* game(): any {
-    while (yield take(PLACE_TOKEN)) {        
+export default function* game(): any {    
+    while (yield take(PLACE_TOKEN)) {
+
         const tokenReducer = yield select<Store>(getTokenReducer);
         const gameBoard = tokenReducer.gameBoard;
         const turnNumber = tokenReducer.turnNumber;
-        
-        getStore(null).dispatch(push("/" + turnNumber));
+        const winner = getWinner(gameBoard);        
 
-        const winner = getWinner(gameBoard);
         if (winner) {
             yield put(gameOver(winner));
+            getStore(null).dispatch(replace("/"));
             break;
         }
 
         if (isDraw(gameBoard)) {
             yield put(gameOver(Token.Empty));
+            getStore(null).dispatch(replace("/"));
             break;
         }
+
+        getStore(null).dispatch(push("/" + turnNumber));
     }
 }

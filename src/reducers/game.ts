@@ -16,26 +16,32 @@ export const initialState = <Store>{
         [Token.Empty, Token.Empty, Token.Empty, Token.Empty],
     ],
     turn: Token.Yellow,
-    turnNumber: 1,
+    turnNumber: 0,
     winner: null,
     history: null
 };
 
-export default function tokenReducer(state: Store = initialState, action: GameAction = null): Store {
+export default function tokenReducer(state: Store = initialState, action): Store {
+
+    // Get current
+    let gameBoard = _.clone(state.gameBoard);
+    let turn = state.turn === Token.Yellow ? Token.Red : Token.Yellow;
+    let turnNumber = state.turnNumber;
+    let history = _.clone(state.history);
+
     switch (action.type) {
         case NEW_GAME:
             return initialState;
         case GAME_OVER:
             return Object.assign({}, state, { winner: action.winner });
         case PLACE_TOKEN:
-            const gameBoard = _.clone(state.gameBoard);
+            
             const column = _.clone(gameBoard[action.column]);
             const emptyIndex = _.findIndex(column, c => c === Token.Empty);
             column.splice(emptyIndex, 1, state.turn);
             gameBoard[action.column] = column;
-            const turn = state.turn === Token.Yellow ? Token.Red : Token.Yellow;
-            const turnNumber = state.turnNumber + 1;
-            let history = _.clone(state.history);            
+            
+            turnNumber = state.turnNumber + 1;                        
 
             // Record move history
             const newHistory = { id: turnNumber, gameBoard: gameBoard, turn: turn };
@@ -54,6 +60,24 @@ export default function tokenReducer(state: Store = initialState, action: GameAc
 
             // Assign back state
             return Object.assign({}, state, { gameBoard, turn, turnNumber, history });
+        case LOCATION_CHANGE:
+
+            if(!history)
+                return Object.assign({}, state, { });
+
+            // Attmept to get the move number from history and restore it's state
+            const pathName = <string>action.payload.pathname;
+            var moveNumber = parseInt(pathName.substring(1));
+            if (moveNumber) {
+                let historyItem = history.find(a => a.id === moveNumber);
+                if(historyItem){
+                    gameBoard = historyItem.gameBoard;
+                    turn = historyItem.turn;
+                    turnNumber = historyItem.id;
+                }
+            }
+
+            return Object.assign({}, state, { gameBoard, turn, turnNumber });
         default:
             return state;
     }

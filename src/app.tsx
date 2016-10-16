@@ -20,7 +20,7 @@ store.subscribe(throttle(()=>{
 }, 1000));
 
 // Create an enhanced history that syncs navigation events with the store
-const history = syncHistoryWithStore(browserHistory, store);
+export const history = syncHistoryWithStore(browserHistory, store);
 
 /* tslint:disable */
 require("ionicons-npm/css/ionicons.css");
