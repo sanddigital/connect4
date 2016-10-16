@@ -2,8 +2,11 @@ import * as _ from "lodash";
 
 import { GAME_OVER, GameAction, NEW_GAME, PLACE_TOKEN } from "actions/game";
 import { Store, Token } from "store/store";
+import { LOCATION_CHANGE } from 'react-router-redux';
 
-const initialState = <Store>{
+import { getStore } from "store";
+
+export const initialState = <Store>{
     gameBoard: [
         [Token.Empty, Token.Empty, Token.Empty, Token.Empty],
         [Token.Empty, Token.Empty, Token.Empty, Token.Empty],
@@ -32,14 +35,14 @@ export default function tokenReducer(state: Store = initialState, action: GameAc
             gameBoard[action.column] = column;
             const turn = state.turn === Token.Yellow ? Token.Red : Token.Yellow;
             const turnNumber = state.turnNumber + 1;
-            let history = _.clone(state.history);
+            let history = _.clone(state.history);            
 
             // Record move history
-            const newHistory = { id: turnNumber, gameBoard: gameBoard };    
-                     
+            const newHistory = { id: turnNumber, gameBoard: gameBoard, turn: turn };
+
             if (history) {
                 const replaceIndex = history.findIndex(a => a.id === newHistory.id);
-                if(replaceIndex > -1)
+                if (replaceIndex > -1)
                     history.splice(replaceIndex, history.length - replaceIndex, newHistory);
                 else
                     history.push(newHistory);

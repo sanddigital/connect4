@@ -3,10 +3,11 @@ import { applyMiddleware, createStore, combineReducers } from "redux";
 import createSagaMiddleware from "redux-saga";
 import { browserHistory } from 'react-router';
 import { routerMiddleware, push } from 'react-router-redux';
+import { Store as ReduxStore } from "redux";
 
 import reducers from 'reducers';
 
-export let theStore = null;
+export let theStore : ReduxStore<any> = null;
 
 export function configureStore(persistedState) {
     const middleware = routerMiddleware(browserHistory);
@@ -16,6 +17,6 @@ export function configureStore(persistedState) {
     return theStore;
 }
 
-export const getStore : any = () =>{
+export const getStore = () =>{
     return theStore;
 }

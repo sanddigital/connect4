@@ -6,7 +6,8 @@ export enum Token {
 
 export interface GameHistory{
     gameBoard: Token[][];
-    id: number
+    id: number;
+    turn: Token;
 }
 
 export interface Store {
