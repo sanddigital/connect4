@@ -1,43 +1,43 @@
 import * as _ from "lodash";
-import {put, select, take} from "redux-saga/effects";
+import { put, select, take } from "redux-saga/effects";
 
-import {PLACE_TOKEN, gameOver} from "actions/game";
-import {Store, Token} from "store/store";
+import { PLACE_TOKEN, gameOver } from "actions/game";
+import { Store, Token } from "store/store";
 
 import { browserHistory } from 'react-router'
 import { push } from "react-router-redux";
 
-function getWinner(gameBoard: Token[][]): Token {    
+function getWinner(gameBoard: Token[][]): Token {
 
     const rotateBoard = _.zip.apply(_, gameBoard);
-        
+
     // Match 4 in row
-    for(let x = 0; x < rotateBoard.length; x++) {
-        for(let y = 0; y < rotateBoard[x].length; y++) {
+    for (let x = 0; x < rotateBoard.length; x++) {
+        for (let y = 0; y < rotateBoard[x].length; y++) {
 
-            let match = 
-            isWinner(rotateBoard, x, y, 1, 0) || // Horizonatal
-            isWinner(rotateBoard, x, y, 0, 1) || // Vertical
-            isWinner(rotateBoard, x, y, 1, 1) || // Diagonal top-left > bottom-right
-            isWinner(rotateBoard, x, y, 1, -1);  // Diagonal bottom-left > top-right
+            let match =
+                isWinner(rotateBoard, x, y, 1, 0) || // Horizonatal
+                isWinner(rotateBoard, x, y, 0, 1) || // Vertical
+                isWinner(rotateBoard, x, y, 1, 1) || // Diagonal top-left > bottom-right
+                isWinner(rotateBoard, x, y, 1, -1);  // Diagonal bottom-left > top-right
 
-            if(match)
+            if (match)
                 return rotateBoard[x][y];
-        }    
+        }
     }
-    
+
     return null;
 }
 
 function isWinner(gameBoard, x, y, stepX, stepY) {
     let startValue = gameBoard[x][y];
 
-    if(startValue === Token.Empty)
+    if (startValue === Token.Empty)
         return false;
-    
+
     for (let i = 1; i < 4; i++) {
         let xPos = gameBoard[x + i * stepX]
-        if(!xPos)
+        if (!xPos)
             return false;
 
         if (xPos[y + i * stepY] != startValue)
@@ -47,16 +47,16 @@ function isWinner(gameBoard, x, y, stepX, stepY) {
     return true;
 }
 
-function isDraw(gameBoard: Token[][]): boolean {    
+function isDraw(gameBoard: Token[][]): boolean {
     let movesRemaining = 0;
-    
-    for(let x = 0; x < gameBoard.length; x++) {
-        for(let y = 0; y < gameBoard[x].length; y++) {
+
+    for (let x = 0; x < gameBoard.length; x++) {
+        for (let y = 0; y < gameBoard[x].length; y++) {
 
             let cellValue = gameBoard[x][y];
-            if(cellValue === 0)
+            if (cellValue === 0)
                 movesRemaining++;
-        }    
+        }
     }
 
     return movesRemaining === 0;
@@ -72,18 +72,18 @@ export default function* game(): any {
         const gameBoard = tokenReducer.gameBoard;
         const turnNumber = tokenReducer.turnNumber;
 
-        const theStore =  getStore();                  
-        theStore.props.store.dispatch(push(22));        
+        const theStore = getStore();
+        theStore.props.history.push("/" + turnNumber);
 
         const winner = getWinner(gameBoard);
         if (winner) {
             yield put(gameOver(winner));
             break;
         }
-        
+
         if (isDraw(gameBoard)) {
-             yield put(gameOver(Token.Empty));
-             break;
+            yield put(gameOver(Token.Empty));
+            break;
         }
     }
 }
