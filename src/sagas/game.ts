@@ -75,16 +75,16 @@ export default function* game(): any {
 
         if (winner) {
             yield put(gameOver(winner));
-            getStore(null).dispatch(replace("/"));
+            getStore().dispatch(replace("/"));
             break;
         }
 
         if (isDraw(gameBoard)) {
             yield put(gameOver(Token.Empty));
-            getStore(null).dispatch(replace("/"));
+            getStore().dispatch(replace("/"));
             break;
         }
 
-        getStore(null).dispatch(push("/" + turnNumber));
+        getStore().dispatch(push("/" + turnNumber));
     }
 }

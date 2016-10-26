@@ -15,5 +15,7 @@ export interface Store {
     turn: Token;
     turnNumber: number;
     winner?: Token;
-    history: GameHistory[]
+    history: GameHistory[],
+    timeLeft: number,
+    lastMoveTime: number
 }

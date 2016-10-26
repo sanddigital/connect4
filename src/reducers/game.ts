@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 
-import { GAME_OVER, GameAction, NEW_GAME, PLACE_TOKEN } from "actions/game";
+import { GAME_OVER, GameAction, NEW_GAME, PLACE_TOKEN, TICK } from "actions/game";
 import { Store, Token } from "store/store";
 import { LOCATION_CHANGE } from 'react-router-redux';
 
@@ -18,7 +18,9 @@ export const initialState = <Store>{
     turn: Token.Yellow,
     turnNumber: 0,
     winner: null,
-    history: null
+    history: null,
+    timeLeft: 10,
+    lastMoveTime: Date.now()
 };
 
 export default function tokenReducer(state: Store = initialState, action): Store {
@@ -28,6 +30,9 @@ export default function tokenReducer(state: Store = initialState, action): Store
     let turn = state.turn === Token.Yellow ? Token.Red : Token.Yellow;
     let turnNumber = state.turnNumber;
     let history = _.clone(state.history);
+    let lastMoveTime = _.clone(state.lastMoveTime);
+    if(!lastMoveTime)
+        lastMoveTime = Date.now();
 
     switch (action.type) {
         case NEW_GAME:
@@ -78,6 +83,9 @@ export default function tokenReducer(state: Store = initialState, action): Store
             }
 
             return Object.assign({}, state, { gameBoard, turn, turnNumber });
+        case TICK:
+            const timeLeft = action.timeLeft;
+            return Object.assign({}, state, { timeLeft, lastMoveTime });
         default:
             return state;
     }
